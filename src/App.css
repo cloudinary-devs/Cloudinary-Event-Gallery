@@ -1,0 +1,30 @@
+.eventography-app {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    height: calc(100vh - 40px);
+    text-align: center;
+    padding: 20px;
+}
+  
+  .eventography-app h1 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: white;
+  }
+
+  h1 a  {
+    color: #646cff;
+  }
+
+  button {
+    background-color: #646cff;
+  }
+  
+  .eventography-app p {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    color: white;
+  }

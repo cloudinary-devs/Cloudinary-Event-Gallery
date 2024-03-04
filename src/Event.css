@@ -1,0 +1,61 @@
+.event {
+  width: 100%;
+  height: calc(100vh - 40px);;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  background-color: white !important;
+  background: url("assets/background.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  font-synthesis: none;
+}
+
+.file-input-label {
+  display: inline-block;
+  background-color: #21482d;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  color: white;
+  cursor: pointer;
+  min-width: 164px;
+}
+
+.file-input-label:hover {
+  background-color: #21482d;
+}
+
+/* Hide the actual file input */
+input[type='file'] {
+  display: none;
+}
+
+
+
+
+.outerbar {
+  margin: 16px;
+}
+
+.innerbar {
+  background-color: #21482d;
+}
+
+.event img {
+  width: 50%;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+}
+
+.event button {
+  background-color: #21482d;
+}
