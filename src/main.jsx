@@ -7,9 +7,10 @@ import {
 } from "react-router-dom";
 import Event from './Event';
 import Gallery from './Gallery';
-import Profile from './Profile';
 import App from './App';
 import Navbar from './Navbar';
+import Profile from './Profile';
+import { AuthProvider } from './AuthContext';
 
 const router = createBrowserRouter([
   {
@@ -22,7 +23,7 @@ const router = createBrowserRouter([
   },
   {
     path: "profile",
-    element: <Profile/>,
+    element: <Profile />
   },
   {
     path: "/",
@@ -32,7 +33,9 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <Navbar />
-    <RouterProvider router={router} />
+    <AuthProvider>
+      <Navbar />
+      <RouterProvider router={router} />
+    </AuthProvider>
   </React.StrictMode>,
 )

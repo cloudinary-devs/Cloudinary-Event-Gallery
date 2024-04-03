@@ -10,14 +10,14 @@
   padding: 0;
   text-align: center;
   width: 100%;
-  height: calc(100vh - 40px);;
+  height: calc(100vh - 40px);
   background-color: black;
 }
 
 body {
   margin: 0;
-    display: block !important;
-    min-height: calc(100vh - 40px);;
+  display: block !important;
+  min-height: calc(100vh - 40px);
 }
 
 a {
@@ -33,7 +33,7 @@ body {
   margin: 0;
   display: flex;
   place-items: center;
-  min-height: calc(100vh - 40px);;
+  min-height: calc(100vh - 40px);
 }
 
 button {

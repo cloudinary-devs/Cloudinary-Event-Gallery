@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react';
 import './Gallery.css';
-import { storage } from './firebase';
 import { ref, getDownloadURL, listAll } from "firebase/storage";
 import { getLastPartOfUrl } from './helpers/urlHelpers';
+import { storage } from './helpers/firebase';
 
 const Gallery = () => {
   const [images, setImages] = useState([]);
   const [showFullImage, setShowFullImage] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [path, setPath] = useState(null);
+  
   useEffect(()=> {
     const fetchImages = async () => {
         try {
@@ -18,9 +19,6 @@ const Gallery = () => {
             const {items} = await listAll(listRef);
             for (const itemRef of items) {
                 const downloadURL = await getDownloadURL(itemRef);
-                const httpsReference = ref(storage, downloadURL);
-                console.log("reference", httpsReference);
-                //await downloadFile(downloadURL, itemRef.name);
                 files.push(
                         {
                             imgName: itemRef.name,
@@ -56,14 +54,6 @@ const Gallery = () => {
     }
     return imgName;
   }
-
-  const downloadFile = (url, filename) => {
-    const link = document.createElement('a');
-    link.href = url;
-    console.log(url)
-    link.download = filename;
-    link.click();
-  };
 
   const handleCloseFullImage = () => {
     setShowFullImage(false);
