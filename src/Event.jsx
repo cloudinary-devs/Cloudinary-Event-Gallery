@@ -18,7 +18,8 @@ function Event() {
     for (let key in files) {
       if (Object.prototype.hasOwnProperty.call(files, key)) {
         const file = files[key];
-        const storageRef = ref(storage, `files/${window.location.pathname}/${file.name}`);
+        console.log(window.location.pathname)
+        const storageRef = ref(storage, `files/${window.location.pathname}/images/${file.name}`);
         const uploadTask = uploadBytesResumable(storageRef, file);
             uploadTask.on("state_changed",
             (snapshot) => {

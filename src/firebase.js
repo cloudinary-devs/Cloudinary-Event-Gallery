@@ -8,12 +8,13 @@ import {getFirestore} from 'firebase/firestore'
 // https://firebase.google.com/docs/web/setup#available-libraries
 // Your web app's Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyCAvRBPcc8n3_e1jVWQVb25wBYbjFcOw2c",
-    authDomain: "boda-1c364.firebaseapp.com",
-    projectId: "boda-1c364",
-    storageBucket: "boda-1c364.appspot.com",
-    messagingSenderId: "1056401293243",
-    appId: "1:1056401293243:web:43d68a193b01f9009bce9e"
+  apiKey: "AIzaSyAoDftDS82tE8ZXHko3faTzXFRZ-i_3cLc",
+  authDomain: "eventographyapp.firebaseapp.com",
+  projectId: "eventographyapp",
+  storageBucket: "eventographyapp.appspot.com",
+  messagingSenderId: "323797368260",
+  appId: "1:323797368260:web:69f435bd8cdaaf65b33891",
+  measurementId: "G-4SZELCTGEH"
 };
   
   // Initialize Firebase

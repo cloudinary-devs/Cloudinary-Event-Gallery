@@ -14,10 +14,13 @@ const Gallery = () => {
         try {
             const files = [];
             setPath(window.location.pathname.split('/').filter(segment => segment !== '')[1]); 
-            const listRef = ref(storage, `files/events/${path}/thumnails`);
+            const listRef = ref(storage, `files/events/${path}/images/thumbs`);
             const {items} = await listAll(listRef);
             for (const itemRef of items) {
                 const downloadURL = await getDownloadURL(itemRef);
+                const httpsReference = ref(storage, downloadURL);
+                console.log("reference", httpsReference);
+                //await downloadFile(downloadURL, itemRef.name);
                 files.push(
                         {
                             imgName: itemRef.name,
@@ -53,6 +56,14 @@ const Gallery = () => {
     }
     return imgName;
   }
+
+  const downloadFile = (url, filename) => {
+    const link = document.createElement('a');
+    link.href = url;
+    console.log(url)
+    link.download = filename;
+    link.click();
+  };
 
   const handleCloseFullImage = () => {
     setShowFullImage(false);
