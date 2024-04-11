@@ -10,6 +10,7 @@
   background-size: cover;
   font-synthesis: none;
   color: white;
+  gap: 16px;
 }
 
 .file-input-label {

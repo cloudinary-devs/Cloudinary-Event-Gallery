@@ -30,10 +30,10 @@ const Profile = () => {
         eventTitle: eventTitle,
         eventHashtag: eventHashtag,
         paid: true,
-        backgroundEventImage: "",
-        eventFontColor: "",
-        buttonsFontColor: "",
-        eventLogo: "",
+        // backgroundEventImage: "",
+        // eventFontColor: "",
+        // buttonsFontColor: "",
+        // eventLogo: "",
         uid: user.uid,
       });
     } catch (e) {

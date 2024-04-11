@@ -3,3 +3,9 @@ export const getLastPartOfUrl = () => {
     const lastPart = parts[parts.length - 1];
     return lastPart;
 }
+
+export const getEventIdFromUrl = () => {
+    return window.location.pathname
+    .split("/")
+    .filter((segment) => segment !== "")[1];
+}

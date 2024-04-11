@@ -2,7 +2,7 @@
 import { initializeApp } from "firebase/app";
 import { getStorage } from "firebase/storage";
 import {getAuth} from 'firebase/auth';
-import {getFirestore} from 'firebase/firestore'
+import {collection, getFirestore, setDoc} from 'firebase/firestore'
 import { doc, getDoc } from "firebase/firestore";
 
 // TODO: Add SDKs for Firebase products that you want to use
@@ -18,17 +18,27 @@ const firebaseConfig = {
   measurementId: "G-4SZELCTGEH"
 };
 
-export const getEventData = async (userId) => {
-  const docRef = doc(db, "events", userId);
+export const getEventData = async (eventId) => {
+  console.log(eventId);
+  const docRef = doc(db, "events", eventId);
   const docSnap = await getDoc(docRef);
 
   if (docSnap.exists()) {
+    console.log('data', docSnap.data())
     return docSnap.data();
   } else {
     console.log("No such document!");
     return null;
   }
 };
+
+export const updateEventData = async (eventId, data) => {
+  try {
+    await setDoc(doc(collection(db, "events"), eventId), data);
+  } catch (e) {
+      console.error("Error adding document: ", e);
+  }
+}
   
   // Initialize Firebase
 const app = initializeApp(firebaseConfig);
