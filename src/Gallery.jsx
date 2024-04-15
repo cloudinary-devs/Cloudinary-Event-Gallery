@@ -40,7 +40,7 @@ const Gallery = () => {
   };
 
   return (
-    <>
+    <div className='gallery'>
       <button className="gallery-upload-btn" onClick={() => window.location.href = `/events/${eventId}`}>Upload Pics</button>
       <div className="gallery-container">
         {showFullImage && selectedImage && (
@@ -62,7 +62,7 @@ const Gallery = () => {
           ))
         ) : <p>Loading...</p>}
       </div>
-    </>
+    </div>
   );
 }
 

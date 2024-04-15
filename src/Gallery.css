@@ -1,3 +1,9 @@
+.gallery {
+  background-color: black;
+  height: 100vh;
+  width: 100%;
+}
+
 .gallery-upload-btn {
   margin-top: 80px;
 }
