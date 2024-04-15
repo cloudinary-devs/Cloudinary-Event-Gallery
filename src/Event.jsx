@@ -24,17 +24,20 @@ function Event() {
   useEffect(()=>{
     const fetchData = async() => {
       const eventData = await getEventData(getEventIdFromUrl());
-      setDocSnap(eventData || null);
+      console.log('event', eventData);
+      setDocSnap(eventData);
     }
     
     fetchData();
   },[])
 
   return (
-    <div className="event">
+    <>{docSnap &&
+    (
+      <div className="event">
       <h2>{docSnap?.eventTitle}</h2>
       <h3>{docSnap?.eventHashtag}</h3>
-      <CloudinaryUploadWidget uwConfig={uwConfig} />
+      <CloudinaryUploadWidget uwConfig={uwConfig} docSnap={docSnap}/>
       <button onClick={() => (window.location.href = `/galleries/${getEventIdFromUrl()}`)}>
         View Pictures
       </button>
@@ -43,6 +46,8 @@ function Event() {
         <a href="https://eventographyapp.com/"> Eventography</a>
       </p>
     </div>
+    )}
+    </>
   );
 }
 export default Event;

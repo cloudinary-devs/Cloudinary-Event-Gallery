@@ -1,17 +1,15 @@
 import { createContext, useEffect, useState } from "react";
 import { updateEventData } from "./helpers/firebase";
-import { useAuth } from "./AuthContext";
 import { imageOptimization } from "./helpers/cloudinaryHelpers";
 import { getEventIdFromUrl } from "./helpers/urlHelpers";
 
 // Create a context to manage the script loading state
 const CloudinaryScriptContext = createContext();
 
-function CloudinaryUploadWidget({ uwConfig }) {
+function CloudinaryUploadWidget({ uwConfig, docSnap }) {
   const [loaded, setLoaded] = useState(false);
   const [images, setImages] = useState([]);
   const [thumbnails, setThumbnails] = useState([]);
-  const { docSnap } = useAuth();
 
   useEffect(() => {
     // Check if the script is already loaded
@@ -37,8 +35,8 @@ function CloudinaryUploadWidget({ uwConfig }) {
         try {
           await updateEventData(getEventIdFromUrl(), {
             ...docSnap,
-            images: images,
-            thumbnails: thumbnails,
+            images: [...docSnap.images, ...images],
+            thumbnails: [...docSnap.thumbnails, ...thumbnails],
           });
         } catch (e) {
           console.error("Error adding document: ", e);
