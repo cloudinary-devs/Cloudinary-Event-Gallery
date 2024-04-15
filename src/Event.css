@@ -11,6 +11,7 @@
   font-synthesis: none;
   color: white;
   gap: 16px;
+  background-color: black;
 }
 
 .file-input-label {
