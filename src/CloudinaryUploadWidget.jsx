@@ -33,11 +33,21 @@ function CloudinaryUploadWidget({ uwConfig, docSnap }) {
     if (docSnap && images.length > 0 && thumbnails.length > 0) {
       const updateFirestore = async () => {
         try {
-          await updateEventData(getEventIdFromUrl(), {
-            ...docSnap,
-            images: [...docSnap.images, ...images],
-            thumbnails: [...docSnap.thumbnails, ...thumbnails],
-          });
+          let updatedData;
+          if (docSnap?.images && docSnap?.thumbnails) {
+            updatedData = {
+              ...docSnap,
+              images: [...docSnap.images, ...images],
+              thumbnails: [...docSnap.thumbnails, ...thumbnails],
+            }
+          } else {
+            updatedData = {
+              ...docSnap,
+              images: [...images],
+              thumbnails: [...thumbnails],
+            }
+          }
+          await updateEventData(getEventIdFromUrl(),updatedData);
         } catch (e) {
           console.error("Error adding document: ", e);
         }

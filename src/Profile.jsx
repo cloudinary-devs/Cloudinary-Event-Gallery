@@ -1,13 +1,13 @@
 import { useState } from "react";
 import "./Profile.css"; // Import the CSS file
-import { db } from "./helpers/firebase";
+import { auth, db } from "./helpers/firebase";
 import { collection, doc, setDoc } from "firebase/firestore";
 import QRCodeGenerator from "./QRCodeGenerator";
 import { useAuth } from "./AuthContext";
 import { useEffect } from "react";
 
 const Profile = () => {
-  const { user, docSnap } = useAuth();
+  const { user, docSnap, setUser } = useAuth();
   const [eventTitle, setEventTitle] = useState("");
   const [eventHashtag, setEventHashtag] = useState("");
   const link = window.location.hostname;
@@ -18,7 +18,13 @@ const Profile = () => {
       setEventTitle(docSnap?.eventTitle || "");
       setEventHashtag(docSnap?.eventHashtag || "");
     } else if (!user) {
-      window.location.href="/"
+      const unsubscribe = auth.onAuthStateChanged((user) => {
+        console.log('user', user);
+        setUser(user);
+      });
+      return () => {
+        unsubscribe();
+      };
     }
   }, []);
 

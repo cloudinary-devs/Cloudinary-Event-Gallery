@@ -25,6 +25,7 @@ export const AuthProvider = ({ children }) => {
   
     if (!user) {
       const unsubscribe = auth.onAuthStateChanged((user) => {
+        console.log('user', user);
         setUser(user);
       });
       return () => {
@@ -60,7 +61,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, docSnap, signInWithGoogle, handleLogout }}>
+    <AuthContext.Provider value={{ user, docSnap, signInWithGoogle, handleLogout, setUser }}>
       {children}
     </AuthContext.Provider>
   );
