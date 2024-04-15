@@ -26,7 +26,7 @@ const Profile = () => {
         unsubscribe();
       };
     }
-  }, []);
+  }, [docSnap, user, setUser]);
 
   // Function to handle saving data
   const handleSave = async () => {
@@ -55,7 +55,7 @@ const Profile = () => {
   };
 
   return (
-    <>{user && (
+    <>{(user && docSnap) && (
       <div className="profile">
       <div className="profile-container">
         <div>
