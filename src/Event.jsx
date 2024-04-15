@@ -1,11 +1,10 @@
 import "./Event.css";
-import { useState } from "react";
-import { useAuth } from "./AuthContext";
+import { useEffect, useState } from "react";
 import CloudinaryUploadWidget from "./CloudinaryUploadWidget";
 import { getEventIdFromUrl } from "./helpers/urlHelpers";
+import { getEventData } from "./helpers/firebase";
 
 function Event() {
-  const { docSnap } = useAuth();
   const [cloudName] = useState("eventography");
   const [uploadPreset] = useState("react-course");
   const [uwConfig] = useState({
@@ -20,11 +19,21 @@ function Event() {
       crop: 'fill'
     }
   });
+  const [docSnap, setDocSnap] = useState();
+
+  useEffect(()=>{
+    const fetchData = async() => {
+      const eventData = await getEventData(getEventIdFromUrl());
+      setDocSnap(eventData || null);
+    }
+    
+    fetchData();
+  },[])
 
   return (
     <div className="event">
       <h2>{docSnap?.eventTitle}</h2>
-      <h3>#{docSnap?.eventHashtag}</h3>
+      <h3>{docSnap?.eventHashtag}</h3>
       <CloudinaryUploadWidget uwConfig={uwConfig} />
       <button onClick={() => (window.location.href = `/galleries/${getEventIdFromUrl()}`)}>
         View Pictures

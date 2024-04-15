@@ -1,8 +1,8 @@
 import { createContext, useEffect, useState } from "react";
-import { collection, doc, setDoc } from "firebase/firestore";
-import { db } from "./helpers/firebase";
+import { updateEventData } from "./helpers/firebase";
 import { useAuth } from "./AuthContext";
 import { imageOptimization } from "./helpers/cloudinaryHelpers";
+import { getEventIdFromUrl } from "./helpers/urlHelpers";
 
 // Create a context to manage the script loading state
 const CloudinaryScriptContext = createContext();
@@ -29,26 +29,19 @@ function CloudinaryUploadWidget({ uwConfig }) {
         setLoaded(true);
       }
     }
-
-    if (docSnap) {
-      setImages(docSnap.images || []);
-      setThumbnails(docSnap.thumbnails || []);
-    }
-  }, [loaded, docSnap]);
+  }, [loaded]);
 
   useEffect(() => {
     if (docSnap && images.length > 0 && thumbnails.length > 0) {
-      // Perform Firestore operation here
       const updateFirestore = async () => {
         try {
-          await setDoc(doc(collection(db, "events"), "lJHuUwje9bNBDsq9aDOeZNrJuz23"), {
+          await updateEventData(getEventIdFromUrl(), {
             ...docSnap,
             images: images,
             thumbnails: thumbnails,
           });
         } catch (e) {
           console.error("Error adding document: ", e);
-          // Handle error gracefully, e.g., show error message to the user
         }
       };
       updateFirestore();
@@ -59,7 +52,7 @@ function CloudinaryUploadWidget({ uwConfig }) {
     if (loaded) {
       const myWidget = window.cloudinary.createUploadWidget(
         uwConfig,
-        async (error, result) => {
+        (error, result) => {
           if (!error && result && result.event === "success") {
             setImages(prevImages => [...prevImages, imageOptimization(result.info.url, 'q_auto')]);
             setThumbnails(prevThumbnails => [...prevThumbnails, result.info.thumbnail_url]);
@@ -81,7 +74,6 @@ function CloudinaryUploadWidget({ uwConfig }) {
     <CloudinaryScriptContext.Provider value={{ loaded }}>
       <button
         id="upload_widget"
-        className="cloudinary-button"
         onClick={initializeCloudinaryWidget}
       >
         Upload Images
