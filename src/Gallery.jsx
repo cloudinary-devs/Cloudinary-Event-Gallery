@@ -8,14 +8,20 @@ const Gallery = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [docSnap, setDocSnap] = useState(null);
   const [loadingStates, setLoadingStates] = useState([]);
+
   const eventId = getLastPartOfUrl();
+
   useEffect(() => {
     const fetchData = async () => {
-      const docSnap = await getEventData(eventId);
-      setDocSnap(docSnap);
-      setLoadingStates(new Array(docSnap?.thumbnails?.length || 0).fill(true));
+      try {
+        const docSnap = await getEventData(eventId);
+        setDocSnap(docSnap);
+        setLoadingStates(new Array(docSnap?.thumbnails?.length || 0).fill(true));
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
     };
-    fetchData();  
+    fetchData();
   }, [eventId]);
 
   const handleThumbnailClick = (imgUrl) => {
@@ -32,7 +38,7 @@ const Gallery = () => {
   };
 
   const handleImageLoad = (index) => {
-    setLoadingStates(prevStates => {
+    setLoadingStates((prevStates) => {
       const newStates = [...prevStates];
       newStates[index] = false;
       return newStates;
@@ -40,30 +46,32 @@ const Gallery = () => {
   };
 
   return (
-    <div className='gallery'>
-      <button className="gallery-upload-btn" onClick={() => window.location.href = `/events/${eventId}`}>Upload Pics</button>
+    <div className="gallery">
+      <button className="gallery-upload-btn" onClick={() => (window.location.href = `/events/${eventId}`)}>
+        Upload Pics
+      </button>
       <div className="gallery-container">
         {showFullImage && selectedImage && (
           <div className="full-image-container">
-            <button className="close-btn" onClick={handleCloseFullImage}>Close</button>
+            <button className="close-btn" onClick={handleCloseFullImage}>
+              Close
+            </button>
             <img src={selectedImage} alt="Full Size" className="full-image" />
           </div>
         )}
         {!showFullImage && docSnap?.thumbnails?.length > 0 ? (
           docSnap?.thumbnails?.map((imgUrl, index) => (
             <div className="image-item" key={index} onClick={() => handleThumbnailClick(imgUrl)}>
-              <img
-                src={imgUrl}
-                alt={`Image ${index}`}
-                onLoad={() => handleImageLoad(index)}
-              />
+              <img src={imgUrl} alt={`Image ${index}`} onLoad={() => handleImageLoad(index)} />
               {loadingStates[index] && <p>Loading...</p>}
             </div>
           ))
-        ) : <p>Loading...</p>}
+        ) : (
+          <p>Loading...</p>
+        )}
       </div>
     </div>
   );
-}
+};
 
 export default Gallery;
