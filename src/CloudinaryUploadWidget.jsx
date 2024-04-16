@@ -1,11 +1,8 @@
-import { createContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import PropTypes from "prop-types"; // Import PropTypes
 import { updateEventData } from "./helpers/firebase";
 import { imageOptimization } from "./helpers/cloudinaryHelpers";
 import { getEventIdFromUrl } from "./helpers/urlHelpers";
-
-// Create a context to manage the script loading state
-const CloudinaryScriptContext = createContext();
-
 function CloudinaryUploadWidget({ uwConfig, docSnap }) {
   const [loaded, setLoaded] = useState(false);
   const [images, setImages] = useState([]);
@@ -39,15 +36,15 @@ function CloudinaryUploadWidget({ uwConfig, docSnap }) {
               ...docSnap,
               images: [...docSnap.images, ...images],
               thumbnails: [...docSnap.thumbnails, ...thumbnails],
-            }
+            };
           } else {
             updatedData = {
               ...docSnap,
               images: [...images],
               thumbnails: [...thumbnails],
-            }
+            };
           }
-          await updateEventData(getEventIdFromUrl(),updatedData);
+          await updateEventData(getEventIdFromUrl(), updatedData);
         } catch (e) {
           console.error("Error adding document: ", e);
         }
@@ -58,37 +55,37 @@ function CloudinaryUploadWidget({ uwConfig, docSnap }) {
 
   const initializeCloudinaryWidget = async () => {
     if (loaded) {
-      const myWidget = window.cloudinary.createUploadWidget(
+      window.cloudinary.openUploadWidget(
         uwConfig,
-        (error, result) => {
-          if (!error && result && result.event === "success") {
-            setImages(prevImages => [...prevImages, imageOptimization(result.info.url, 'q_auto')]);
-            setThumbnails(prevThumbnails => [...prevThumbnails, result.info.thumbnail_url]);
-          }
-        }
-      );
-
-      document.getElementById("upload_widget").addEventListener(
-        "click",
-        () => {
-          myWidget.open();
-        },
-        false
+        processUploads
       );
     }
   };
 
+  const processUploads = (error, result) => {
+    if (!error && result && result.event === "success") {
+      setImages((prevImages) => [
+        ...prevImages,
+        imageOptimization(result.info.url, "q_auto"),
+      ]);
+      setThumbnails((prevThumbnails) => [
+        ...prevThumbnails,
+        result.info.thumbnail_url,
+      ]);
+    }
+  }
+
   return (
-    <CloudinaryScriptContext.Provider value={{ loaded }}>
-      <button
-        id="upload_widget"
-        onClick={initializeCloudinaryWidget}
-      >
-        Upload Images
-      </button>
-    </CloudinaryScriptContext.Provider>
+    <button id="upload_widget" onClick={initializeCloudinaryWidget}>
+      Upload Images
+    </button>
   );
 }
 
+// Define prop types for CloudinaryUploadWidget
+CloudinaryUploadWidget.propTypes = {
+  uwConfig: PropTypes.object.isRequired, // Prop type object is required
+  docSnap: PropTypes.object, // Prop type object is optional
+};
+
 export default CloudinaryUploadWidget;
-export { CloudinaryScriptContext };

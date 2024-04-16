@@ -35,7 +35,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <AuthProvider>
       <Navbar />
-      <RouterProvider router={router} />
+        <RouterProvider router={router} />
     </AuthProvider>
   </React.StrictMode>,
 )

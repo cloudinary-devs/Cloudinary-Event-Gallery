@@ -1,9 +1,8 @@
 import "./Event.css";
 import { useEffect, useState } from "react";
-import CloudinaryUploadWidget, { CloudinaryScriptContext } from "./CloudinaryUploadWidget";
+import CloudinaryUploadWidget from "./CloudinaryUploadWidget";
 import { getEventIdFromUrl } from "./helpers/urlHelpers";
 import { getEventData } from "./helpers/firebase";
-import { useContext } from "react";
 
 function Event() {
   const [cloudName] = useState("eventography");
@@ -21,7 +20,6 @@ function Event() {
     }
   });
   const [docSnap, setDocSnap] = useState();
-  const { loaded } = useContext(CloudinaryScriptContext);
 
   useEffect(()=>{
     const fetchData = async() => {
