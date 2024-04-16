@@ -37,28 +37,27 @@ export const AuthProvider = ({ children }) => {
   
   
 
-  const signInWithGoogle = () => {
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        const user = result.user;
-        setUser(user);
-        window.location.href = "/profile";
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+  const signInWithGoogle = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      setUser(user);
+      window.location.href = "/profile";
+    } catch (error) {
+      console.error(error);
+    }
   };
-
-  const handleLogout = () => {
-    auth.signOut()
-      .then(() => {
-        setUser(null);
-        window.location.href = "/";
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+  
+  const handleLogout = async () => {
+    try {
+      await auth.signOut();
+      setUser(null);
+      window.location.href = "/";
+    } catch (error) {
+      console.error(error);
+    }
   };
+  
 
   return (
     <AuthContext.Provider value={{ user, docSnap, signInWithGoogle, handleLogout, setUser }}>
