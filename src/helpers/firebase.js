@@ -19,15 +19,11 @@ const firebaseConfig = {
 };
 
 export const getEventData = async (eventId) => {
-  console.log(eventId);
   const docRef = doc(db, "events", eventId);
   const docSnap = await getDoc(docRef);
-
   if (docSnap.exists()) {
-    console.log('data', docSnap.data())
     return docSnap.data();
   } else {
-    console.log("No such document!");
     return null;
   }
 };
@@ -40,7 +36,7 @@ export const updateEventData = async (eventId, data) => {
   }
 }
   
-  // Initialize Firebase
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 export const storage = getStorage(app);
 export const db = getFirestore(app);

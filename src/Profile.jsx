@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./Profile.css"; // Import the CSS file
-import { auth, db } from "./helpers/firebase";
+import { db } from "./helpers/firebase";
 import { collection, doc, setDoc } from "firebase/firestore";
 import QRCodeGenerator from "./QRCodeGenerator";
 import { useAuth } from "./AuthContext";
@@ -14,21 +14,13 @@ const Profile = () => {
 
   useEffect(() => {
     if (docSnap) {
-      // Set eventTitle and eventHashtag when docSnap is available
       setEventTitle(docSnap?.eventTitle || "");
       setEventHashtag(docSnap?.eventHashtag || "");
     } else if (!user) {
-      const unsubscribe = auth.onAuthStateChanged((user) => {
-        console.log('user', user);
-        setUser(user);
-      });
-      return () => {
-        unsubscribe();
-      };
+      setUser(null);
     }
   }, [docSnap, user, setUser]);
 
-  // Function to handle saving data
   const handleSave = async () => {
     if (!user) return;
     try {
@@ -37,11 +29,6 @@ const Profile = () => {
         email: user.email,
         eventTitle: eventTitle,
         eventHashtag: eventHashtag,
-        paid: true,
-        // backgroundEventImage: "",
-        // eventFontColor: "",
-        // buttonsFontColor: "",
-        // eventLogo: "",
         uid: user.uid,
       });
     } catch (e) {
@@ -49,13 +36,12 @@ const Profile = () => {
     }
   };
 
-  // Function to copy the content of the event link input field to the clipboard
   const copyEventLink = () => {
     navigator.clipboard.writeText(`https://${link}/events/${user?.uid}`);
   };
 
   return (
-    <>{(user && docSnap) && (
+    <>{user && (
       <div className="profile">
       <div className="profile-container">
         <div>
@@ -63,7 +49,7 @@ const Profile = () => {
           <input
             type="text"
             id="eventTitle"
-            value={eventTitle || ""}
+            value={eventTitle}
             onChange={(e) => setEventTitle(e.target.value)}
           />
         </div>

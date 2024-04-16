@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }) => {
       if (user) {
         try {
           const eventData = await getEventData(user.uid);
-          setDocSnap(eventData || null);
+          setDocSnap(eventData);
         } catch (error) {
           console.error("Error fetching data:", error);
         }
@@ -25,7 +25,6 @@ export const AuthProvider = ({ children }) => {
   
     if (!user) {
       const unsubscribe = auth.onAuthStateChanged((user) => {
-        console.log('user', user);
         setUser(user);
       });
       return () => {
@@ -43,6 +42,7 @@ export const AuthProvider = ({ children }) => {
       .then((result) => {
         const user = result.user;
         setUser(user);
+        window.location.href = "/profile";
       })
       .catch((error) => {
         console.error(error);
