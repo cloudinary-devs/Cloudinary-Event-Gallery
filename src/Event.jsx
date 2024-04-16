@@ -20,15 +20,16 @@ function Event() {
     }
   });
   const [docSnap, setDocSnap] = useState();
+  const urlPath = window.location.pathname;
 
   useEffect(()=>{
     const fetchData = async() => {
-      const eventData = await getEventData(getEventIdFromUrl());
+      const eventData = await getEventData(getEventIdFromUrl(urlPath));
       setDocSnap(eventData);
     }
     
     fetchData();
-  },[])
+  },[urlPath])
 
   return (
     <>{docSnap &&
@@ -37,7 +38,7 @@ function Event() {
       <h2>{docSnap?.eventTitle}</h2>
       <h3>{docSnap?.eventHashtag}</h3>
       <CloudinaryUploadWidget uwConfig={uwConfig} docSnap={docSnap}/>
-      <button onClick={() => (window.location.href = `/galleries/${getEventIdFromUrl()}`)}>
+      <button onClick={() => (window.location.href = `/galleries/${getEventIdFromUrl(urlPath)}`)}>
         View Pictures
       </button>
       <p className="footer">

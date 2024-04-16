@@ -9,11 +9,9 @@ function CloudinaryUploadWidget({ uwConfig, docSnap }) {
   const [thumbnails, setThumbnails] = useState([]);
 
   useEffect(() => {
-    // Check if the script is already loaded
     if (!loaded) {
       const uwScript = document.getElementById("uw");
       if (!uwScript) {
-        // If not loaded, create and load the script
         const script = document.createElement("script");
         script.setAttribute("async", "");
         script.setAttribute("id", "uw");
@@ -28,28 +26,7 @@ function CloudinaryUploadWidget({ uwConfig, docSnap }) {
 
   useEffect(() => {
     if (docSnap && images.length > 0 && thumbnails.length > 0) {
-      const updateFirestore = async () => {
-        try {
-          let updatedData;
-          if (docSnap?.images && docSnap?.thumbnails) {
-            updatedData = {
-              ...docSnap,
-              images: [...docSnap.images, ...images],
-              thumbnails: [...docSnap.thumbnails, ...thumbnails],
-            };
-          } else {
-            updatedData = {
-              ...docSnap,
-              images: [...images],
-              thumbnails: [...thumbnails],
-            };
-          }
-          await updateEventData(getEventIdFromUrl(), updatedData);
-        } catch (e) {
-          console.error("Error adding document: ", e);
-        }
-      };
-      updateFirestore();
+      updateFirestore(docSnap, images, thumbnails);
     }
   }, [docSnap, images, thumbnails]);
 
@@ -62,19 +39,41 @@ function CloudinaryUploadWidget({ uwConfig, docSnap }) {
     }
   };
 
+  const updateFirestore = async (docSnap, images, thumbnails) => {
+    try {
+      let updatedData;
+      if (docSnap?.images && docSnap?.thumbnails) {
+        updatedData = {
+          ...docSnap,
+          images: [...docSnap.images, ...images],
+          thumbnails: [...docSnap.thumbnails, ...thumbnails],
+        };
+      } else {
+        updatedData = {
+          ...docSnap,
+          images: [...images],
+          thumbnails: [...thumbnails],
+        };
+      }
+      await updateEventData(getEventIdFromUrl(window.location.pathname), updatedData);
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  };
+
   const processUploads = (error, result) => {
     if (!error && result && result.event === "success") {
-      setImages((prevImages) => [
+      setImages(prevImages => [
         ...prevImages,
         imageOptimization(result.info.url, "q_auto"),
       ]);
-      setThumbnails((prevThumbnails) => [
+      setThumbnails(prevThumbnails => [
         ...prevThumbnails,
         result.info.thumbnail_url,
       ]);
     }
-  }
-
+  };
+  
   return (
     <button id="upload_widget" onClick={initializeCloudinaryWidget}>
       Upload Images
