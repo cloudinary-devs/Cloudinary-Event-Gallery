@@ -35,16 +35,16 @@ function Event() {
     <>{docSnap &&
     (
       <div className="event">
-      <h2>{docSnap?.eventTitle}</h2>
-      <h3>{docSnap?.eventHashtag}</h3>
-      <CloudinaryUploadWidget uwConfig={uwConfig} docSnap={docSnap}/>
-      <button onClick={() => (window.location.href = `/galleries/${getEventIdFromUrl(urlPath)}`)}>
-        View Pictures
-      </button>
-      <p className="footer">
-        Created with 💜 by
-        <a href="https://eventographyapp.com/"> Eventography</a>
-      </p>
+        <h2>{docSnap?.eventTitle}</h2>
+        <h3>{docSnap?.eventHashtag}</h3>
+        <CloudinaryUploadWidget uwConfig={uwConfig} docSnap={docSnap}/>
+        <button onClick={() => (window.location.href = `/galleries/${getEventIdFromUrl(urlPath)}`)}>
+          View Pictures
+        </button>
+        <p className="footer">
+          Created with 💜 by
+          <a href="https://eventographyapp.com/"> Eventography</a>
+        </p>
     </div>
     )}
     </>
