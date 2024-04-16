@@ -62,7 +62,7 @@ function CloudinaryUploadWidget({ uwConfig, docSnap }) {
   };
 
   const processUploads = (error, result) => {
-    if (!error && result && result.event === "success") {
+    if (!error && result && result.event === "success" && result.info.moderation[0].status === "approved") {
       setImages(prevImages => [
         ...prevImages,
         imageOptimization(result.info.url, "q_auto"),
