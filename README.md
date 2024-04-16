@@ -7,7 +7,7 @@ Another cool feature of Eventography is the content moderation using Amazon Reko
 
 ## Run the app locally
 
-1) ```npm install``
+1) ```npm install```
 
 2) ```npm run dev```
 
