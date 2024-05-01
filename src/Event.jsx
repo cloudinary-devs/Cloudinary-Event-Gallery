@@ -5,11 +5,9 @@ import { getEventIdFromUrl } from "./helpers/urlHelpers";
 import { getEventData } from "./helpers/firebase";
 
 function Event() {
-  const [cloudName] = useState("eventography");
-  const [uploadPreset] = useState("react-course");
-  const [uwConfig] = useState({
-    cloudName,
-    uploadPreset,
+  const uwConfig = {
+    cloudName: "eventography",
+    uploadPreset: "react-course",
     sources: ["local"],
     multiple: true,
     folder: `${window.location.pathname}`,
@@ -17,8 +15,8 @@ function Event() {
       width: 500,
       height: 500,
       crop: 'fill'
-    }
-  });
+    },
+  };
   const [docSnap, setDocSnap] = useState();
   const urlPath = window.location.pathname;
 

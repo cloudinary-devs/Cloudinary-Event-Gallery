@@ -5,9 +5,6 @@ import {getAuth} from 'firebase/auth';
 import {collection, getFirestore, setDoc} from 'firebase/firestore'
 import { doc, getDoc } from "firebase/firestore";
 
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyAoDftDS82tE8ZXHko3faTzXFRZ-i_3cLc",
   authDomain: "eventographyapp.firebaseapp.com",

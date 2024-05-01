@@ -1,13 +1,18 @@
-import { useEffect, useState } from "react";
-import PropTypes from "prop-types"; // Import PropTypes
+import { useEffect, useState, useCallback } from "react";
+import PropTypes from "prop-types";
 import { updateEventData } from "./helpers/firebase";
 import { imageOptimization } from "./helpers/cloudinaryHelpers";
 import { getEventIdFromUrl } from "./helpers/urlHelpers";
+
 function CloudinaryUploadWidget({ uwConfig, docSnap }) {
   const [loaded, setLoaded] = useState(false);
   const [images, setImages] = useState([]);
   const [thumbnails, setThumbnails] = useState([]);
+  const [uploadProgress, setUploadProgress] = useState(null);
 
+  /**
+   * Load Cloudinary Upload Widget Script
+   */
   useEffect(() => {
     if (!loaded) {
       const uwScript = document.getElementById("uw");
@@ -24,67 +29,79 @@ function CloudinaryUploadWidget({ uwConfig, docSnap }) {
     }
   }, [loaded]);
 
+  /**
+   * This useEffect will be trigger every time the docSnap, images, or thumbnails chage
+   * and will update the data in our Firestore DB
+   */
   useEffect(() => {
+    const updateEventImages = async () => {
+      try {
+        const updatedData = {
+          ...docSnap,
+          images: docSnap?.images ? [...docSnap.images, ...images] : [...images],
+          thumbnails: docSnap?.thumbnails ? [...docSnap.thumbnails, ...thumbnails] : [...thumbnails],
+        };
+        await updateEventData(getEventIdFromUrl(window.location.pathname), updatedData);
+      } catch (error) {
+        console.error("Error updating document: ", error);
+      }
+    };
+
     if (docSnap && images.length > 0 && thumbnails.length > 0) {
-      updateFirestore(docSnap, images, thumbnails);
+      updateEventImages();
     }
   }, [docSnap, images, thumbnails]);
 
   const initializeCloudinaryWidget = async () => {
+    setUploadProgress(null);
     if (loaded) {
-      window.cloudinary.openUploadWidget(
-        uwConfig,
-        processUploads
-      );
-    }
-  };
-
-  const updateFirestore = async (docSnap, images, thumbnails) => {
-    try {
-      let updatedData;
-      if (docSnap?.images && docSnap?.thumbnails) {
-        updatedData = {
-          ...docSnap,
-          images: [...docSnap.images, ...images],
-          thumbnails: [...docSnap.thumbnails, ...thumbnails],
-        };
-      } else {
-        updatedData = {
-          ...docSnap,
-          images: [...images],
-          thumbnails: [...thumbnails],
-        };
+      try {
+        await window.cloudinary.openUploadWidget(uwConfig, processUploads);
+      } catch (error) {
+        setUploadProgress('failed');
       }
-      await updateEventData(getEventIdFromUrl(window.location.pathname), updatedData);
-    } catch (e) {
-      console.error("Error adding document: ", e);
     }
   };
 
-  const processUploads = (error, result) => {
-    if (!error && result && result.event === "success" && result.info.moderation[0].status === "approved") {
-      setImages(prevImages => [
-        ...prevImages,
-        imageOptimization(result.info.url, "q_auto"),
-      ]);
-      setThumbnails(prevThumbnails => [
-        ...prevThumbnails,
-        result.info.thumbnail_url,
-      ]);
+  const processUploads = useCallback((error, result) => {
+    if (result?.event === "queues-end") {
+      result.info.files.forEach(img => {
+        if (
+          img.status !== "success" ||
+          img.uploadInfo.moderation?.[0]?.status !== "approved" ||
+          error !== undefined
+        ) {
+          setUploadProgress('failed');
+        } else {
+          setImages(prevImages => [
+            ...prevImages,
+            imageOptimization(img.uploadInfo.url, "q_auto"),
+          ]);
+          setThumbnails(prevThumbnails => [
+            ...prevThumbnails,
+            img.uploadInfo.thumbnail_url,
+          ]);
+          setUploadProgress('successful');
+        }
+      });
     }
-  };
-  
+  }, []);
+
   return (
-    <button id="upload_widget" onClick={initializeCloudinaryWidget}>
-      Upload Images
-    </button>
+    <>
+      <button id="upload_widget" onClick={initializeCloudinaryWidget}>
+        Upload Images
+      </button>
+      {uploadProgress && (
+        <p>Image Upload Status: {uploadProgress === 'successful' ? 'successful' : 'failed'}</p>
+      )}
+    </>
   );
 }
 
-// Define prop types for CloudinaryUploadWidget
 CloudinaryUploadWidget.propTypes = {
-  uwConfig: PropTypes.object.isRequired, // Prop type object is required
-  docSnap: PropTypes.object, // Prop type object is optional
+  uwConfig: PropTypes.object.isRequired,
+  docSnap: PropTypes.object,
 };
 
 export default CloudinaryUploadWidget;
