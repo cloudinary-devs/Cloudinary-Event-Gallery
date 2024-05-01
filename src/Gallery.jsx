@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import './Gallery.css';
-import { getLastPartOfUrl } from './helpers/urlHelpers';
+import { getEventIdFromUrl } from './helpers/urlHelpers';
 import { getEventData } from './helpers/firebase';
 
 const Gallery = () => {
@@ -9,7 +9,7 @@ const Gallery = () => {
   const [docSnap, setDocSnap] = useState(null);
   const [loadingStates, setLoadingStates] = useState([]);
 
-  const eventId = getLastPartOfUrl();
+  const eventId = getEventIdFromUrl(window.location.pathname);
 
   useEffect(() => {
     const fetchData = async () => {
