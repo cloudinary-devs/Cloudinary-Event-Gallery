@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import PropTypes from "prop-types";
 import { updateEventData } from "./helpers/firebase";
-import { imageOptimizationUrl } from "./helpers/cloudinaryHelpers";
 import { getEventIdFromUrl } from "./helpers/urlHelpers";
 
 function CloudinaryUploadWidget({ uwConfig, docSnap }) {
@@ -75,7 +74,7 @@ function CloudinaryUploadWidget({ uwConfig, docSnap }) {
         } else {
           setImages(prevImages => [
             ...prevImages,
-            imageOptimizationUrl(img.uploadInfo.url, "q_auto"),
+            img.uploadInfo.url,
           ]);
           setThumbnails(prevThumbnails => [
             ...prevThumbnails,

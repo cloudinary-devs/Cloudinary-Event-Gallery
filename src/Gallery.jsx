@@ -2,12 +2,19 @@ import { useEffect, useState } from 'react';
 import './Gallery.css';
 import { getEventIdFromUrl } from './helpers/urlHelpers';
 import { getEventData } from './helpers/firebase';
+import { AdvancedImage } from '@cloudinary/react';
+import {Cloudinary} from "@cloudinary/url-gen";
 
 const Gallery = () => {
   const [showFullImage, setShowFullImage] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [docSnap, setDocSnap] = useState(null);
   const [loadingStates, setLoadingStates] = useState([]);
+  const cld = new Cloudinary({
+    cloud: {
+      cloudName: import.meta.env.VITE_CLOUD_NAME
+    }
+  });
 
   const eventId = getEventIdFromUrl(window.location.pathname);
 
@@ -26,8 +33,7 @@ const Gallery = () => {
 
   const handleThumbnailClick = (imgUrl) => {
     const imageName = imgUrl.substring(imgUrl.lastIndexOf('/') + 1);
-    const imageUrlPath = import.meta.env.VITE_CLOUDINARY_CLOUD_FOLDER_URL;
-    const urlBuilder = `${imageUrlPath}${eventId}/${imageName}`;
+    const urlBuilder = `events/${eventId}/${imageName}`;
     setShowFullImage(true);
     setSelectedImage(urlBuilder);
   };
@@ -56,7 +62,7 @@ const Gallery = () => {
             <button className="close-btn" onClick={handleCloseFullImage}>
               Close
             </button>
-            <img src={selectedImage} alt="Full Size" className="full-image" />
+            <AdvancedImage cldImg={cld.image(selectedImage).delivery('q_auto').format('auto')} className="full-image"/>
           </div>
         )}
         {!showFullImage && docSnap?.thumbnails?.length > 0 ? (
