@@ -10,6 +10,8 @@ const Gallery = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [docSnap, setDocSnap] = useState(null);
   const [loadingStates, setLoadingStates] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
   const cld = new Cloudinary({
     cloud: {
       cloudName: import.meta.env.VITE_CLOUD_NAME
@@ -35,6 +37,7 @@ const Gallery = () => {
     const imageName = imgUrl.substring(imgUrl.lastIndexOf('/') + 1);
     const urlBuilder = `events/${eventId}/${imageName}`;
     setShowFullImage(true);
+    setIsLoading(true);
     setSelectedImage(urlBuilder);
   };
 
@@ -62,7 +65,8 @@ const Gallery = () => {
             <button className="close-btn" onClick={handleCloseFullImage}>
               Close
             </button>
-            <AdvancedImage cldImg={cld.image(selectedImage).delivery('q_auto').format('auto')} className="full-image"/>
+            <AdvancedImage cldImg={cld.image(selectedImage).delivery('q_auto').format('auto')} className="full-image" onLoad={()=> setIsLoading(false)}/>
+            {isLoading && <p className="loading">Loading...</p>}
           </div>
         )}
         {!showFullImage && docSnap?.thumbnails?.length > 0 ? (

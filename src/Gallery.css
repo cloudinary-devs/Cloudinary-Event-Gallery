@@ -44,10 +44,17 @@ img {
   max-height: 80%;
   object-fit: contain;
 }
+
 .full-image-container img {
   width: 100%;
   height: 100%;
 }
+
+.loading {
+  position: absolute;
+  z-index: 99999;
+}
+
 .close-btn {
   position: absolute;
   top: 10px;

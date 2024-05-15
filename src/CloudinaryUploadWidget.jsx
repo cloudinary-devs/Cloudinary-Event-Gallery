@@ -8,6 +8,7 @@ function CloudinaryUploadWidget({ uwConfig, docSnap }) {
   const [images, setImages] = useState([]);
   const [thumbnails, setThumbnails] = useState([]);
   const [uploadProgress, setUploadProgress] = useState(null);
+  const [pullData, setPullData] = useState(false);
 
   /**
    * Load Cloudinary Upload Widget Script
@@ -46,13 +47,15 @@ function CloudinaryUploadWidget({ uwConfig, docSnap }) {
       }
     };
 
-    if (docSnap && images.length > 0 && thumbnails.length > 0) {
+    if (docSnap || images.length > 0 || thumbnails.length > 0 || pullData) {
       updateEventImages();
     }
-  }, [docSnap, images, thumbnails]);
+    setPullData(false);
+  }, [docSnap, images, thumbnails, pullData]);
 
   const initializeCloudinaryWidget = async () => {
     setUploadProgress(null);
+    setPullData(true);
     if (loaded) {
       try {
         await window.cloudinary.openUploadWidget(uwConfig, processUploads);
