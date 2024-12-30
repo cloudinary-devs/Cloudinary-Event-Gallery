@@ -6,7 +6,7 @@ import { getEventData } from "./helpers/firebase";
 
 function Event() {
   const uwConfig = {
-    cloudName: "eventography",
+    cloudName: import.meta.env.VITE_CLOUD_NAME,
     uploadPreset: "react-course",
     sources: ["local"],
     multiple: true,
