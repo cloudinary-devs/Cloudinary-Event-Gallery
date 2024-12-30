@@ -6,13 +6,13 @@ import {collection, getFirestore, setDoc} from 'firebase/firestore'
 import { doc, getDoc } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAoDftDS82tE8ZXHko3faTzXFRZ-i_3cLc",
-  authDomain: "eventographyapp.firebaseapp.com",
-  projectId: "eventographyapp",
-  storageBucket: "eventographyapp.appspot.com",
-  messagingSenderId: "323797368260",
-  appId: "1:323797368260:web:69f435bd8cdaaf65b33891",
-  measurementId: "G-4SZELCTGEH"
+ apiKey: "XXXXXXXXXXXX",
+ authDomain: "XXXXXXXXXXXX",
+ projectId: "XXXXXXXXXXXX",
+ storageBucket: "XXXXXXXXXXXX",
+ messagingSenderId: "XXXXXXXXXXXX",
+ appId: "XXXXXXXXXXXX",
+ measurementId: "XXXXXXXXXXXX"
 };
 
 export const getEventData = async (eventId) => {
