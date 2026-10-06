@@ -1,13 +1,26 @@
 {
   "hosting": {
     "source": ".",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**", "functions/**"],
     "frameworksBackend": {
       "region": "us-east1"
+    },
+    "headers": [
+      {
+        "source": "/assets/**",
+        "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+      }
+    ]
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "runtime": "nodejs24",
+      "ignore": ["node_modules", "*.test.js", "scripts"]
     }
+  ],
+  "firestore": {
+    "rules": "firestore.rules"
   }
 }
