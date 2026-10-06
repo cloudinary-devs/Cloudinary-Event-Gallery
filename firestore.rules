@@ -1,0 +1,20 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Event pages and galleries are public by link; only the host (whose UID
+    // is the event ID) can create or change their event.
+    match /events/{eventId} {
+      allow read: if true;
+      allow create, update: if request.auth != null && request.auth.uid == eventId;
+      allow delete: if false;
+
+      // Written only by the cloudinaryWebhook function (Admin SDK bypasses
+      // rules), so the gallery lists exactly what Cloudinary stored and
+      // moderation approved.
+      match /media/{mediaId} {
+        allow read: if true;
+        allow write: if false;
+      }
+    }
+  }
+}

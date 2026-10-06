@@ -1,41 +1,35 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import './index.css'
-import {
-  createBrowserRouter,
-  RouterProvider,
-} from "react-router-dom";
-import Event from './Event';
-import Gallery from './Gallery';
-import App from './App';
-import Navbar from './Navbar';
-import Profile from './Profile';
-import { AuthProvider } from './AuthContext';
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { createBrowserRouter, Outlet } from "react-router";
+import { RouterProvider } from "react-router/dom";
+import "./index.css";
+import App from "./App";
+import Navbar from "./Navbar";
+import { AuthProvider } from "./AuthContext";
 
 const router = createBrowserRouter([
   {
-    path: "events/:id",
-    element: <Event/>,
+    element: (
+      <>
+        <Navbar />
+        <Outlet />
+      </>
+    ),
+    children: [
+      { path: "/", element: <App /> },
+      // Split per route so guests opening an event link from a QR code on
+      // mobile data only download the page they need.
+      { path: "profile", lazy: async () => ({ Component: (await import("./Profile")).default }) },
+      { path: "events/:id", lazy: async () => ({ Component: (await import("./Event")).default }) },
+      { path: "galleries/:id", lazy: async () => ({ Component: (await import("./Gallery")).default }) },
+    ],
   },
-  {
-    path: "galleries/:id",
-    element: <Gallery/>,
-  },
-  {
-    path: "profile",
-    element: <Profile />
-  },
-  {
-    path: "/",
-    element: <App/>,
-  }
 ]);
 
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
+createRoot(document.getElementById("root")).render(
+  <StrictMode>
     <AuthProvider>
-      <Navbar />
-        <RouterProvider router={router} />
+      <RouterProvider router={router} />
     </AuthProvider>
-  </React.StrictMode>,
-)
+  </StrictMode>,
+);

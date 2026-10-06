@@ -1,35 +1,41 @@
 import { useState } from "react";
-import "./Navbar.css"; // Import the CSS file
+import { Link, useNavigate } from "react-router";
+import "./Navbar.css";
 import { useAuth } from "./AuthContext";
 
 const Navbar = () => {
   const [showMenu, setShowMenu] = useState(false);
-  const { user, signInWithGoogle, handleLogout } = useAuth();
+  const { user, signInWithGoogle, logout } = useAuth();
+  const navigate = useNavigate();
+  const closeMenu = () => setShowMenu(false);
 
-  const toggleMenu = () => {
-    setShowMenu(!showMenu);
+  const handleLogin = async () => {
+    closeMenu();
+    await signInWithGoogle();
+    navigate("/profile");
+  };
+
+  const handleLogout = async () => {
+    closeMenu();
+    await logout();
+    navigate("/");
   };
 
   return (
     <nav className="navbar">
       <h2>Eventography</h2>
       <div className={`menu ${showMenu ? "show" : ""}`}>
-        <ul>
-          {!user && (
-            <li>
-              <a href="/">Home</a>
-            </li>
-          )}
+        <ul onClick={(e) => e.target.closest("a") && closeMenu()}>
           {user ? (
             <>
               <li>
-                <a href="/profile">Profile</a>
+                <Link to="/profile">Profile</Link>
               </li>
               <li>
-                <a href={`/events/${user.uid}`}>Event</a>
+                <Link to={`/events/${user.uid}`}>Event</Link>
               </li>
               <li>
-                <a href={`/galleries/${user.uid}`}>Gallery</a>
+                <Link to={`/galleries/${user.uid}`}>Gallery</Link>
               </li>
               <li>
                 <button onClick={handleLogout}>Logout</button>
@@ -38,17 +44,25 @@ const Navbar = () => {
           ) : (
             <>
               <li>
-                <button onClick={signInWithGoogle}>Login</button>
+                <Link to="/">Home</Link>
+              </li>
+              <li>
+                <button onClick={handleLogin}>Login</button>
               </li>
             </>
           )}
         </ul>
       </div>
-      <div className="hamburger-menu" onClick={toggleMenu}>
-        <div className="line"></div>
-        <div className="line"></div>
-        <div className="line"></div>
-      </div>
+      <button
+        className="hamburger-menu"
+        onClick={() => setShowMenu((show) => !show)}
+        aria-label="Menu"
+        aria-expanded={showMenu}
+      >
+        <span className="line"></span>
+        <span className="line"></span>
+        <span className="line"></span>
+      </button>
     </nav>
   );
 };

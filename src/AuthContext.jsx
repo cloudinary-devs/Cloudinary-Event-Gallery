@@ -1,73 +1,52 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useState, useContext, useEffect } from "react";
-import { auth } from "./helpers/firebase";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { getEventData } from "./helpers/firebase";
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import PropTypes from 'prop-types';
-const provider = new GoogleAuthProvider();
-const AuthContext = createContext();
+
+const loadAuth = () => import("./helpers/auth");
+const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [docSnap, setDocSnap] = useState(null);
+  // undefined while Firebase restores the session, then a user or null.
+  const [user, setUser] = useState(undefined);
+  const [loadedEvent, setLoadedEvent] = useState({ uid: null, data: null });
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (user) {
-        try {
-          const eventData = await getEventData(user.uid);
-          setDocSnap(eventData);
-        } catch (error) {
-          console.error("Error fetching data:", error);
-        }
-      }
+    let unsubscribe;
+    let cancelled = false;
+    loadAuth().then(({ subscribeToAuth }) => {
+      if (!cancelled) unsubscribe = subscribeToAuth(setUser);
+    });
+    return () => {
+      cancelled = true;
+      unsubscribe?.();
     };
-  
-    if (!user) {
-      const unsubscribe = auth.onAuthStateChanged((user) => {
-        setUser(user);
-      });
-      return () => {
-        unsubscribe();
-      };
-    } else {
-      fetchData();
-    }
+  }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    getEventData(user.uid).then(
+      (data) => !cancelled && setLoadedEvent({ uid: user.uid, data }),
+      (error) => console.error("Error fetching event:", error),
+    );
+    return () => {
+      cancelled = true;
+    };
   }, [user]);
-  
-  
 
-  const signInWithGoogle = async () => {
-    try {
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-      setUser(user);
-      window.location.href = "/profile";
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  
-  const handleLogout = async () => {
-    try {
-      await auth.signOut();
-      setUser(null);
-      window.location.href = "/";
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  
+  const refreshEvent = useCallback(async () => {
+    if (!user) return;
+    const data = await getEventData(user.uid);
+    setLoadedEvent({ uid: user.uid, data });
+  }, [user]);
 
-  return (
-    <AuthContext.Provider value={{ user, docSnap, signInWithGoogle, handleLogout, setUser }}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
+  // Never expose a previous user's event after sign-out or account switch.
+  const event = user && loadedEvent.uid === user.uid ? loadedEvent.data : null;
 
-AuthProvider.propTypes = {
-  children: PropTypes.node.isRequired,
+  const signInWithGoogle = async () => (await loadAuth()).signInWithGoogle();
+  const logout = async () => (await loadAuth()).logout();
+
+  return <AuthContext value={{ user, event, refreshEvent, signInWithGoogle, logout }}>{children}</AuthContext>;
 };
 
 export const useAuth = () => useContext(AuthContext);

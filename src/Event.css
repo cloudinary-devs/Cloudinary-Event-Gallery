@@ -1,52 +1,42 @@
 .event {
   width: 100%;
-  height: calc(100vh - 40px);
+  min-height: calc(100dvh - 84px);
+  padding: 24px 16px 64px;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
   text-align: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  font-synthesis: none;
   color: white;
   gap: 16px;
   background-color: black;
+  position: relative;
 }
 
-.file-input-label {
+.uploader {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  border-radius: 8px;
-  border: 1px solid transparent;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  color: white;
-  background-color: #646cff;
-  cursor: pointer;
-  width: 200px;
-  height: 40px;
-  line-height: 1rem;
-
+  width: 100%;
 }
 
-/* Hide the actual file input */
-input[type="file"] {
-  display: none;
-}
-
-.outerbar {
-  margin: 16px;
-}
-
-.innerbar {
+/* Big, thumb-friendly primary action on phones */
+.upload-button {
+  width: min(320px, 100%);
+  min-height: 56px;
+  font-size: 1.1rem;
   background-color: #646cff;
 }
 
-.event img {
-  width: 50%;
+.upload-status {
+  min-height: 1.5em;
+  max-width: 32em;
+  margin: 8px 0 0;
+}
+
+.event a.button {
+  width: min(320px, 100%);
 }
 
 .footer {
@@ -57,9 +47,4 @@ input[type="file"] {
 
 .footer a {
   color: white;
-}
-
-.event button {
-  background-color: #646cff;
-  width: 200px;
 }
