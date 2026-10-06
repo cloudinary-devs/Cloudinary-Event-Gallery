@@ -1,80 +1,112 @@
 .gallery {
+  min-height: 100%;
+  padding: 16px;
+  box-sizing: border-box;
   background-color: black;
-  height: 100%;
-  width: 100%;
+  color: white;
 }
 
-.gallery-upload-btn {
-  margin-top: 80px;
-}
-.gallery-container {
+.gallery-header {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  padding: 20px;
-}
-
-.image-item {
-  width: 20%; /* 5 images per row */
-  margin: 10px;
-}
-
-img {
-  /* width: 100%;
-    height: auto; */
-  width: 200px;
-  height: 200px;
-  object-fit: cover;
-}
-
-.full-image-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.9);
-  display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin: 16px 0 24px;
 }
 
-.full-image {
-  max-width: 80%;
-  max-height: 80%;
-  object-fit: contain;
+.gallery-header h2 {
+  margin: 0;
 }
 
-.full-image-container img {
+.gallery-message {
+  color: white;
+}
+
+.gallery-grid {
+  list-style: none;
+  margin: 0 auto;
+  padding: 0;
+  max-width: 1280px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(240px, 30vw), 1fr));
+  gap: 8px;
+}
+
+@media (max-width: 480px) {
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 4px;
+  }
+}
+
+/* Skip layout/paint for rows far off-screen: keeps scrolling smooth with
+   hundreds of thumbnails. */
+.gallery-grid > li {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 240px;
+}
+
+.gallery-item {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  aspect-ratio: 1;
+  background-color: #1a1a1a;
+}
+
+.gallery-item img {
   width: 100%;
   height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
-.loading {
+.video-badge {
   position: absolute;
-  z-index: 99999;
+  right: 8px;
+  bottom: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  font-size: 0.8rem;
+}
+
+.load-more {
+  margin: 24px auto;
+}
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.92);
+}
+
+.lightbox-media {
+  max-width: 92vw;
+  max-height: 88vh;
+  object-fit: contain;
+  background-size: cover;
+  background-position: center;
 }
 
 .close-btn {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 12px;
+  right: 12px;
+  min-width: 0;
   background: none;
   border: none;
   color: white;
-  font-size: 20px;
-  cursor: pointer;
-  outline: none;
-}
-
-p {
-  margin: 20px;
-  color: white;
-}
-
-/* Media query for mobile devices */
-@media (max-width: 768px) {
-  .image-item {
-    width: 100%; /* 1 image per row on mobile */
-  }
+  font-size: 24px;
 }

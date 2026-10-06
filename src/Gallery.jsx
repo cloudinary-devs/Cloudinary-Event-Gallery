@@ -1,85 +1,140 @@
-import { useEffect, useState } from 'react';
-import './Gallery.css';
-import { getEventIdFromUrl } from './helpers/urlHelpers';
-import { getEventData } from './helpers/firebase';
-import { AdvancedImage } from '@cloudinary/react';
-import {Cloudinary} from "@cloudinary/url-gen";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Link, useParams } from "react-router";
+import "./Gallery.css";
+import { getEventData, subscribeToEventMedia } from "./helpers/firebase";
+import {
+  fullImageUrl,
+  fullWidthFor,
+  legacyUrlToMedia,
+  placeholderUrl,
+  thumbnailSources,
+  videoPosterUrl,
+  videoUrl,
+} from "./helpers/cloudinary";
 
-const Gallery = () => {
-  const [showFullImage, setShowFullImage] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [docSnap, setDocSnap] = useState(null);
-  const [loadingStates, setLoadingStates] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+const PAGE_SIZE = 48;
+// Matches the grid in Gallery.css so the browser picks the right srcset entry.
+const THUMB_SIZES = "(max-width: 480px) 50vw, (max-width: 900px) 33vw, 240px";
 
-  const cld = new Cloudinary({
-    cloud: {
-      cloudName: import.meta.env.VITE_CLOUD_NAME
-    }
-  });
-
-  const eventId = getEventIdFromUrl(window.location.pathname);
+function Lightbox({ item, onClose }) {
+  const [loaded, setLoaded] = useState(false);
+  const width = fullWidthFor(window.innerWidth, window.devicePixelRatio);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const docSnap = await getEventData(eventId);
-        setDocSnap(docSnap);
-        setLoadingStates(new Array(docSnap?.thumbnails?.length || 0).fill(true));
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-    fetchData();
+    const onKey = (e) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  return (
+    <div className="lightbox" role="dialog" aria-modal="true" onClick={onClose}>
+      <button className="close-btn" onClick={onClose} aria-label="Close">
+        ✕
+      </button>
+      {item.resourceType === "video" ? (
+        <video
+          className="lightbox-media"
+          src={videoUrl(item.publicId)}
+          poster={videoPosterUrl(item.publicId)}
+          controls
+          autoPlay
+          playsInline
+          onClick={(e) => e.stopPropagation()}
+        />
+      ) : (
+        <img
+          className="lightbox-media"
+          src={fullImageUrl(item.publicId, width)}
+          alt=""
+          decoding="async"
+          style={loaded ? undefined : { backgroundImage: `url(${placeholderUrl(item.publicId)})` }}
+          onLoad={() => setLoaded(true)}
+          onClick={(e) => e.stopPropagation()}
+        />
+      )}
+    </div>
+  );
+}
+
+const Gallery = () => {
+  const { id: eventId } = useParams();
+  const [event, setEvent] = useState(null);
+  const [media, setMedia] = useState(null);
+  const [pageSize, setPageSize] = useState(PAGE_SIZE);
+  const [selected, setSelected] = useState(null);
+  const [error, setError] = useState(null);
+  const closeLightbox = useCallback(() => setSelected(null), []);
+
+  useEffect(() => {
+    getEventData(eventId).then(setEvent, setError);
   }, [eventId]);
 
-  const handleThumbnailClick = (imgUrl) => {
-    const imageName = imgUrl.substring(imgUrl.lastIndexOf('/') + 1);
-    const urlBuilder = `events/${eventId}/${imageName}`;
-    setShowFullImage(true);
-    setIsLoading(true);
-    setSelectedImage(urlBuilder);
-  };
+  // Live: new uploads appear for everyone viewing without a refresh. Only the
+  // visible page is subscribed, so a viewer never downloads the whole event.
+  useEffect(
+    () => subscribeToEventMedia(eventId, pageSize, setMedia, setError),
+    [eventId, pageSize],
+  );
 
-  const handleCloseFullImage = () => {
-    setShowFullImage(false);
-    setSelectedImage(null);
-  };
+  const legacyMedia = useMemo(
+    () =>
+      (event?.thumbnails ?? [])
+        .map(legacyUrlToMedia)
+        .filter(Boolean)
+        .reverse()
+        .map((m) => ({ id: m.publicId, ...m })),
+    [event],
+  );
 
-  const handleImageLoad = (index) => {
-    setLoadingStates((prevStates) => {
-      const newStates = [...prevStates];
-      newStates[index] = false;
-      return newStates;
-    });
-  };
+  const hasMore = media?.length === pageSize;
+  const items = media ? [...media, ...(hasMore ? [] : legacyMedia)] : [];
 
   return (
     <div className="gallery">
-      <button className="gallery-upload-btn" onClick={() => (window.location.href = `/events/${eventId}`)}>
-        Upload Pics
-      </button>
-      <div className="gallery-container">
-        {showFullImage && selectedImage && (
-          <div className="full-image-container">
-            <button className="close-btn" onClick={handleCloseFullImage}>
-              Close
-            </button>
-            <AdvancedImage cldImg={cld.image(selectedImage).delivery('q_auto').format('auto')} className="full-image" onLoad={()=> setIsLoading(false)}/>
-            {isLoading && <p className="loading">Loading...</p>}
-          </div>
-        )}
-        {!showFullImage && docSnap?.thumbnails?.length > 0 ? (
-          docSnap?.thumbnails?.map((imgUrl, index) => (
-            <div className="image-item" key={index} onClick={() => handleThumbnailClick(imgUrl)}>
-              <img src={imgUrl} alt={`Image ${index}`} onLoad={() => handleImageLoad(index)} />
-              {loadingStates[index] && <p>Loading...</p>}
-            </div>
-          ))
-        ) : (
-          <p>Loading...</p>
-        )}
-      </div>
+      <header className="gallery-header">
+        {event?.eventTitle && <h2>{event.eventTitle}</h2>}
+        <Link className="button" to={`/events/${eventId}`}>
+          Upload pics
+        </Link>
+      </header>
+
+      {error && <p className="gallery-message">Couldn&apos;t load this gallery.</p>}
+      {!error && !media && <p className="gallery-message">Loading…</p>}
+      {media && items.length === 0 && <p className="gallery-message">No photos yet — be the first to upload!</p>}
+
+      <ul className="gallery-grid">
+        {items.map((item, index) => {
+          const { src, srcSet } = thumbnailSources(item.publicId, item.resourceType);
+          return (
+            <li key={item.id}>
+              <button className="gallery-item" onClick={() => setSelected(item)}>
+                <img
+                  src={src}
+                  srcSet={srcSet}
+                  sizes={THUMB_SIZES}
+                  alt=""
+                  // Above-the-fold images load immediately; the rest wait
+                  // until scrolled near.
+                  loading={index < 12 ? "eager" : "lazy"}
+                  fetchPriority={index < 4 ? "high" : "auto"}
+                  decoding="async"
+                  width="240"
+                  height="240"
+                />
+                {item.resourceType === "video" && <span className="video-badge" aria-label="Video">▶</span>}
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+
+      {hasMore && (
+        <button className="load-more" onClick={() => setPageSize((n) => n + PAGE_SIZE)}>
+          Load more
+        </button>
+      )}
+
+      {selected && <Lightbox item={selected} onClose={closeLightbox} />}
     </div>
   );
 };
