@@ -7,9 +7,13 @@ Another cool feature of Eventography is the content moderation using Amazon Reko
 
 ## Run the app locally
 
-1) ```npm install```
+Requires Node.js 24 LTS (`nvm use`).
 
-2) ```npm run dev```
+1) `npm install`
+2) Copy `.env.example` to `.env.local` and fill in your Cloudinary and Firebase values
+3) `npm run dev`
+
+Guest uploads are signed by Firebase Cloud Functions (`functions/`). See [UPGRADE.md](UPGRADE.md#deploy) for deploying the functions and creating the signed Cloudinary upload preset.
 
 ## Run online
 https://eventographyapp.com/
