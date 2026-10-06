@@ -1,32 +1,19 @@
 import { useRef } from "react";
-import QRCode from "qrcode.react";
-import html2canvas from "html2canvas";
+import { QRCodeCanvas } from "qrcode.react";
 
-// eslint-disable-next-line react/prop-types
 const QRCodeGenerator = ({ url }) => {
-  const qrCodeRef = useRef(null);
+  const canvasRef = useRef(null);
 
   const downloadQRCode = () => {
-    if (qrCodeRef.current !== null) {
-      html2canvas(qrCodeRef.current)
-        .then((canvas) => {
-          const imgData = canvas.toDataURL("image/png");
-          const link = document.createElement("a");
-          link.download = "qrcode.png";
-          link.href = imgData;
-          link.click();
-        })
-        .catch((error) => {
-          console.error("Error generating QR code image:", error);
-        });
-    }
+    const link = document.createElement("a");
+    link.download = "qrcode.png";
+    link.href = canvasRef.current.toDataURL("image/png");
+    link.click();
   };
 
   return (
     <div>
-      <div ref={qrCodeRef}>
-        <QRCode value={url} />
-      </div>
+      <QRCodeCanvas ref={canvasRef} value={url} size={192} marginSize={2} />
       <button onClick={downloadQRCode}>Download QR Code</button>
     </div>
   );

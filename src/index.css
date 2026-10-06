@@ -76,3 +76,24 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+/* Router links styled as buttons */
+a.button {
+  display: inline-block;
+  box-sizing: border-box;
+  min-width: 164px;
+  padding: 0.6em 1.2em;
+  border-radius: 8px;
+  background-color: #646cff;
+  color: #fff;
+}
+
+a.button:hover {
+  color: #fff;
+  filter: brightness(1.1);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}

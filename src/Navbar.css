@@ -25,6 +25,10 @@
 
 .hamburger-menu {
   display: flex;
+  min-width: 0;
+  padding: 8px;
+  background: none;
+  border: none;
   flex-direction: column; /* Changed from 'row' to 'column' */
   cursor: pointer;
 }
